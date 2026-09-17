@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Iris Species Predictor</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="card">
+
+            <h1>Iris Species Predictor</h1>
+
+            <p class="subtitle">
+                Enter the flower measurements to predict the species
+            </p>
+
+            <form id="predictionForm">
+
+                <div class="input-group">
+                    <label>Sepal Length</label>
+                    <input
+                        type="number"
+                        id="sepal_length"
+                        step="0.1"
+                        placeholder="e.g. 5.1"
+                        required
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label>Sepal Width</label>
+                    <input
+                        type="number"
+                        id="sepal_width"
+                        step="0.1"
+                        placeholder="e.g. 3.5"
+                        required
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label>Petal Length</label>
+                    <input
+                        type="number"
+                        id="petal_length"
+                        step="0.1"
+                        placeholder="e.g. 1.4"
+                        required
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label>Petal Width</label>
+                    <input
+                        type="number"
+                        id="petal_width"
+                        step="0.1"
+                        placeholder="e.g. 0.2"
+                        required
+                    >
+                </div>
+
+                <button type="submit">
+                    Predict Species
+                </button>
+
+            </form>
+
+            <div id="result" class="result"></div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        document.getElementById("predictionForm").addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const data = {
+                sepal_length: document.getElementById("sepal_length").value,
+                sepal_width: document.getElementById("sepal_width").value,
+                petal_length: document.getElementById("petal_length").value,
+                petal_width: document.getElementById("petal_width").value
+            };
+
+            const result = document.getElementById("result");
+
+            result.innerHTML = "Predicting...";
+
+            try {
+
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const output = await response.json();
+
+                if (output.success) {
+
+                    result.innerHTML =
+                        "Predicted Species: <strong>" +
+                        output.species +
+                        "</strong>";
+
+                } else {
+
+                    result.innerHTML =
+                        "Error: " + output.error;
+
+                }
+
+            } catch (error) {
+
+                result.innerHTML =
+                    "Unable to connect to the server.";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
